@@ -1,0 +1,392 @@
+\documentclass[aspectratio=1610]{beamer}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{amsfonts}
+\usepackage{booktabs}
+\usepackage{dsfont} % For the double-struck indicator 1 symbol (\mathds{1})
+
+\newcommand{\EE}{\mathbb{E}}
+
+\newcommand{\ip}[2]{\langle #1, #2 \rangle}
+\newcommand{\twomat}[4]{\begin{bmatrix} #1 & #2 \\ #3 & #4 \end{bmatrix}}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\I}{\operatorname{I}}
+\newcommand{\Hh}{\operatorname{H}}
+\newcommand{\bbP}{\mathbb{P}}
+\newcommand{\bbE}{\mathbb{E}}
+\newcommand{\KL}{D}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\Ent}{\operatorname{Ent}}
+\newcommand{\LS}{\mathrm{LS}}
+\newcommand{\mix}{\mathrm{mix}}
+\newcommand{\supp}{\operatorname{supp}}
+
+\theoremstyle{plain}
+% \newtheorem{theorem}{Theorem}[section]
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheorem{proposition}[theorem]{Proposition}
+% \newtheorem{fact}[theorem]{Fact}
+% \newtheorem{corollary}[theorem]{Corollary}
+
+
+
+\setbeamertemplate{footline}[frame number]
+
+\title{H-Consistency Bounds}
+\author[]{Yizheng Li, Edwin Liu, John Quigley}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}{Motivation}
+
+\begin{itemize}
+    \item Algorithms optimize using a surrogate loss function different from the target loss function 
+    \begin{itemize}
+        \item Target loss (eg. 0-1 loss) is hard to optimize (non-smooth, non-differentiable)
+    \end{itemize}
+    \item What guarantees can we give on the target loss estimation error when we minimize the surrogate loss estimation error?
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Historical result: H-consistency bound setup}
+\textbf{Definitions and notations:}
+\begin{itemize}
+    \item Noise: $\eta(x)=\Pr[Y=1|X=x]$.
+    \item Conditional $\ell$-risk: $\mathcal{C}_{\ell}(h, x) = \eta(x)\ell(h, x, +1) + (1 - \eta(x))\ell(h, x, -1)$.
+    \item  notation for gap: $\Delta \mathcal{C}_{\ell, \mathcal{H}}(h, x) = \mathcal{C}_{\ell}(h, x) - \inf_{h\in\mathcal{H}}\mathcal{C}_{\ell}(h, x)$
+    % \item $\epsilon$-truncation: $\langle  z \rangle_\epsilon = z\mathbf{1}_{z > \epsilon}$
+    \item generalization error: $\mathcal{E}_{\ell}(h) := \mathbb{E}_X[\mathcal{C}_{\ell}(h, x)]$. $\mathcal{E}_{\ell}^*(\mathcal{H}):=\inf_{h\in\mathcal{H}}\mathcal{E}_{\ell}(h)$
+    \item Minimizability gap: $\mathcal{M}_{\ell}(\mathcal{H}) = \mathcal{E}_{\ell}^*(\mathcal{H}) - \mathbb{E}_x[\inf_{h\in\mathcal{H}}\mathcal{C}_{\ell}(h, x)]$
+    \item Note that $\mathcal{E}_{\ell}(h) -\mathcal{E}_{\ell}^*(h) + \mathcal{M}_{\ell}(\mathcal H) = \mathbb{E}_X[\Delta \mathcal{C}_{\ell, \mathcal{H}}(h,x)]$
+    \item Margin based losses: $\ell(h, x, y) = \Phi(y h(x))$
+\end{itemize}
+
+
+% \noindent \textbf{Theorem 1 (Distribution-dependent $\Psi$-bound).} Assume that there exists a convex function $\Psi: \mathbb{R}_+ \to \mathbb{R}$ with $\Psi(0) \geq 0$ and $\epsilon \geq 0$ such that the following holds for all $h \in \mathcal{H}$ and $x \in \mathcal{X}$:
+% \[
+% \Psi(\langle \Delta \mathcal{C}_{\ell_2, \mathcal{H}}(h, x) \rangle_\epsilon) \leq \Delta \mathcal{C}_{\ell_1, \mathcal{H}}(h, x).
+% \]
+% Then, the following inequality holds for any $h \in \mathcal{H}$:
+% \[
+% \Psi(\mathcal{E}_{\ell_2}(h) - \mathcal{E}^*_{\ell_2, \mathcal{H}} + \mathcal{M}_{\ell_2, \mathcal{H}}) \leq \mathcal{E}_{\ell_1}(h) - \mathcal{E}^*_{\ell_1, \mathcal{H}} + \mathcal{M}_{\ell_1, \mathcal{H}} + \max\{\Psi(0), \Psi(\epsilon)\}.
+% \]
+
+% \medskip
+
+% \noindent \textbf{Theorem 1 (Distribution-independent $\Gamma$-bound).} Assume that 1) $\mathcal{H}$ satisfies for any $x \in \mathcal{X}$: $\{\mathrm{sign}(h(x)): h \in \mathcal{H}\} = \{-1, +1\}$, and 2) $\Phi$ is a margin-based loss function, and 3) there exist a non-negative and non-decreasing concave function $\Gamma: \mathbb{R}_+ \to \mathbb{R}$ and $\epsilon \ge 0$ such that the following holds for any for any $t \in [1/2, 1]$:
+% \[
+% (2t - 1)\mathbf{1}_{2t-1>\epsilon} \le \Gamma \left( \inf_{x \in \mathcal{X}, h \in \mathcal{H}: h(x) < 0} \Delta \mathcal{C}_{\Phi, \mathcal{H}}(h, x, t) \right).
+% \]
+% \textit{Then, for any hypothesis $h \in \mathcal{H}$ and any distribution,}
+% \begin{equation*}
+% \underbrace{\mathcal{E}_{\ell_{0-1}}(h) - \mathcal{E}_{\ell_{0-1}, \mathcal{H}}^*}_{\text{Target Est. Err.}} 
+% \le 
+% \Gamma \left( \underbrace{\mathcal{E}_{\Phi}(h) - \mathcal{E}_{\Phi, \mathcal{H}}^*}_{\text{Surrogate Est. Err.}} + \mathcal{M}_{\Phi, \mathcal{H}} \right) - \mathcal{M}_{\ell_{0-1}, \mathcal{H}} + \epsilon
+% \end{equation*}
+
+% \noindent \textbf{Theorem 2 (Distribution-dependent $\Gamma$-bound).} Assume that there exists a concave function $\Gamma: \mathbb{R}_+ \to \mathbb{R}$ and $\epsilon \geq 0$ such that the following holds for all $h \in \mathcal{H}$ and $x \in \mathcal{X}$:
+% \[
+% \langle \Delta \mathcal{C}_{\ell_2, \mathcal{H}}(h, x) \rangle_\epsilon \leq \Gamma(\Delta \mathcal{C}_{\ell_1, \mathcal{H}}(h, x)).
+% \]
+% Then, the following inequality holds for any $h \in \mathcal{H}$:
+% \[
+% \mathcal{E}_{\ell_2}(h) - \mathcal{E}^*_{\ell_2, \mathcal{H}} \leq \Gamma(\mathcal{E}_{\ell_1}(h) - \mathcal{E}^*_{\ell_1, \mathcal{H}} + \mathcal{M}_{\ell_1, \mathcal{H}}) - \mathcal{M}_{\ell_2, \mathcal{H}} + \epsilon.
+% \]
+    
+\end{frame}
+
+\begin{frame}{The History of H-Consistency}
+
+% --- Definition 1 (Bayes-consistency) ---
+    \noindent
+    \textbf{Definition 1} (\textbf{Bayes-consistency}) \textit{A loss function $\ell_1$ is Bayes-consistent with respect to a loss function $\ell_2$, if for any distribution $\mathcal{D}$ and any sequence $\{h_n\}_{n \in \mathbb{N}} \subset \mathcal{H}_{\text{all}}$,}
+    $$
+        {\lim_{n \to +\infty} \mathcal{E}_{\ell_1}(h_n) - \mathcal{E}_{\ell_1}^*(\mathcal{H}_{\text{all}}) = 0 \quad \text{implies} \quad \lim_{n \to +\infty} \mathcal{E}_{\ell_2}(h_n) - \mathcal{E}_{\ell_2}^*(\mathcal{H}_{\text{all}}) = 0.}
+    $$
+    
+    \vspace{0.5em} % Small vertical space between definitions
+    \hrule % Horizontal rule for separation (optional)
+    \vspace{0.5em}
+    
+    % --- Definition 2 ((\mathcal{P}, \mathcal{H})-consistency) ---
+    \noindent
+    \textbf{Definition 2} \textbf{($\mathcal{H}$-consistency)}. \textit{We say that $\ell_1$ is $\mathcal{H}$-consistent with respect to $\ell_2$, if, for all distributions $\mathcal{D}$ and sequences $\{h_n\}_{n \in \mathbb{N}} \subset \mathcal{H}$, we have}
+    $$
+    {\lim_{n \to +\infty} \mathcal{E}_{\ell_1}(h_n)-\mathcal{E}_{\ell_1}^*(\mathcal{H}) = 0 \implies \lim_{n \to +\infty} \mathcal{E}_{\ell_2}(h_n)-\mathcal{E}_{\ell_2}^*(\mathcal{H}) = 0.\ }
+    $$
+    
+    \vspace{0.5em} % Small vertical space between definitions
+    \hrule % Horizontal rule for separation (optional)
+    \vspace{0.5em}
+    
+    % --- Definition 3 (H-consistency bounds) ---
+    \noindent
+    \textbf{Definition 3} \textbf{($\mathcal{H}$-consistency bounds)} \textit{Given a hypothesis set $\mathcal{H}$, an $\mathcal{H}$-consistency bound relating the loss function $\ell_1$ to the loss function $\ell_2$ for a hypothesis set $\mathcal{H}$ is an inequality of the form}
+    $$
+        {\forall h \in \mathcal{H}, \quad \mathcal{E}_{\ell_2}(h) - \mathcal{E}_{\ell_2}^*(\mathcal{H}) + \mathcal{M}_{\ell_2}(\mathcal{H}) \leq \Gamma(\mathcal{E}_{\ell_1}(h) - \mathcal{E}_{\ell_1}^*(\mathcal{H}) + \mathcal{M}_{\ell_1}(\mathcal{H}))}
+    $$
+    \textit{that holds for any distribution $\mathcal{D}$, where $\Gamma: \mathbb{R}_+ \to \mathbb{R}_+$ is a non-decreasing concave function with $\Gamma \geq 0$ (Awasthi et al., 2022b,a). Here, $\mathcal{M}_{\ell_1}(\mathcal{H})$ and $\mathcal{M}_{\ell_2}(\mathcal{H})$ are minimizability gaps for the respective loss functions.}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Universal growth rate bounds based on HCB}
+
+Consider the case when the target loss is just the \textbf{0-1 loss}, then we have a function $\mathcal{T}$, and we call it the \textbf{$\mathcal{H}$-estimation error transformation} for the surrogate loss $\ell$ and the following holds \textbf{tightly}
+
+$$\forall h \in \mathcal{H},\ \mathcal{T}(\mathcal{E}_{\ell_{0-1}}(h) - \mathcal{E}^*_{\ell_{0-1}}(\mathcal{H}) + \mathcal{M}_{\ell_{0-1}}(\mathcal{H})) \le \mathcal{E}_{\ell}(h) - \mathcal{E}^*_{\ell}(\mathcal{H}) + \mathcal{M}_{\ell}(\mathcal{H})$$
+
+\textbf{Tight} means that for any $t\in [0,1]$, there exists a hypothesis $h \in \mathcal{H}$ and a distribution such that $\mathcal{E}_{\ell_{0-1}}(h) - \mathcal{E}^*_{\ell_{0-1}}(\mathcal{H}) + \mathcal{M}_{\ell_{0-1}}(\mathcal{H}) = t$ and $\mathcal{E}_{\ell}(h) - \mathcal{E}^*_{\ell}(\mathcal{H}) + \mathcal{M}_{\ell}(\mathcal{H}) = \mathcal{T}(t)$.
+
+And in the case where $\mathcal{H}$ is complete ($\forall x, \{h(x) | h\in \mathcal{H}\} = \mathbb{R}$), we have that $\mathcal{T}$ takes the form:
+$$f_t(u) = \frac{1-t}{2}\Phi(u) + \frac{1+t}{2}\Phi(-u), t\in[0,1]$$
+$$\mathcal{T}(t):=\inf_{u \geq 0} f_t(u) - \inf_{u \in \mathbb{R}} f_t(u)$$
+
+Furthermore, a theorem proved in \textit{Universal Growth Rate} says that when $\Phi$ is differentiable at $0$, and $\Phi'(0)<0$, we have that $\mathcal{T}(t) = f_t(0) - \inf_{u \in \mathbb{R}} f_t(u)$
+
+(one small note is that $\mathcal{T}(0)=0$
+
+%Insert the table here
+
+
+\end{frame}
+\begin{frame}{Universal Growth Rate: Transformation Table}
+
+To demonstrate, consider
+\(
+\mathcal{H}_{\mathrm{lin}}
+= \left\{ x \mapsto w \cdot x + b \;\middle|\; \|w\|_{q} \le W,\ |b| \le B \right\}
+\)
+\footnotesize
+    \centering
+    % The title/caption of the table
+    % {Table 2: $\mathcal{H}_{\text{lin}}$-estimation error transformation.}
+    
+    % Adjust vertical padding for rows to match the spacious look of the image
+    \renewcommand{\arraystretch}{1.0}
+    
+    \begin{tabular}{l l}
+        \toprule
+        Surrogates & $\mathcal{T}_{\Phi}(t), t \in [0, 1]$ \\
+        \midrule
+        Hinge & $\min\{B, 1\}t$ \\
+        
+        Logistic & $\begin{cases} 
+            \frac{t+1}{2}\log_2(t+1) + \frac{1-t}{2}\log_2(1-t), & t \le \frac{e^B-1}{e^B+1}, \\ 
+            1 - \frac{t+1}{2}\log_2(1+e^{-B}) - \frac{1-t}{2}\log_2(1+e^B), & t > \frac{e^B-1}{e^B+1}. 
+        \end{cases}$ \\
+        
+        Exponential & $\begin{cases} 
+            1 - \sqrt{1-t^2}, & t \le \frac{e^{2B}-1}{e^{2B}+1}, \\ 
+            1 - \frac{t+1}{2}e^{-B} - \frac{1-t}{2}e^B, & t > \frac{e^{2B}-1}{e^{2B}+1}. 
+        \end{cases}$ \\
+        
+        Quadratic & $\begin{cases} 
+            t^2, & t \le B, \\ 
+            2Bt - B^2, & t > B. 
+        \end{cases}$ \\
+        
+        Sigmoid & $\tanh(kB)t$ \\
+        
+        $\rho$-Margin & $\frac{\min\{B,\rho\}}{\rho} t$ \\
+        \bottomrule
+    \end{tabular}
+    \normalsize
+    \centering
+    \includegraphics[width=0.6\linewidth]{transformations.png}
+
+    
+\end{frame}
+\begin{frame}{Universal Growth Rate: main theoretical results}
+
+\textbf{Theorem 5 (Upper and lower bound for binary margin-based losses)} Let $\mathcal{H}$ be a complete hypothesis set. Assume that $\Phi$ is convex, twice continuously differentiable, and satisfies the inequalities $\Phi'(0) > 0$ and $\Phi''(0) > 0$. Then, the following property holds: $\mathcal{T}(t) = \Theta(t^2)$; that is, there exist positive constants $C>0$, $c>0$, and $T>0$ such that $Ct^2 \geq \mathcal{T}(t) \geq ct^2$, for all $0 < t \leq T$.
+
+\textbf{Proof Sketch:}
+\begin{itemize}
+    \item Use the implicit function theorem on the first-order condition \(f_t'(a_t^*) = 0\) to show a unique minimizer \(a_t^*\) exists, with \(a_0^* = 0\) and \(\left.\frac{da_t^*}{dt}\right|_{t=0} = \frac{\Phi'(0)}{\Phi''(0)} > 0\), hence \(a_t^* = \Theta(t)\).
+    \item Represent \(\mathcal{T}(t) = f_t(0) - \inf_u f_t(u)\) as \(\mathcal{T}(t) = \int_0^{a_t^*} u f_t''(u)\,du\).
+    \item By continuity and \(\Phi''(0) > 0\), bound the second derivative on a small interval: \(c \le f_t''(u) \le C\) for all \(u \in [0, a_t^*]\).
+    \item Then \(\frac{c}{2}(a_t^*)^2 \le \mathcal{T}(t) \le \frac{C}{2}(a_t^*)^2\), and since \(a_t^* = \Theta(t)\), this gives \(\mathcal{T}(t) = \Theta(t^2)\).
+\end{itemize}
+    
+\end{frame}
+
+
+\begin{frame}{Universal Grow Rate: Results and extension}
+Define $V_{\ell}:=\mathcal{E}_{\ell}(h) - \mathcal{E}^*_{\ell}(\mathcal{H}) + \mathcal{M}_{\ell}(\mathcal{H})$.
+\begin{center}
+\begin{tabular}{ccc}
+\hline
+$\Phi(u)$ & margin-based losses $\ell$ & $\mathcal{H}$-Consistency bounds \\
+\hline
+$e^{-u}$ & $e^{-yh(x)}$ & $V_{\ell_{0-1}} \leq \sqrt{2(V_{\ell})}$ \\
+$\log(1+e^{-u})$ & $\log(1+e^{-yh(x)})$ & $V_{\ell_{0-1}} \leq \sqrt{2(V_{\ell})}$ \\
+$\max\{0,1-u\}^2$ & $\max\{0,1-yh(x)\}^2$ & $V_{\ell_{0-1}} \leq \sqrt{V_{\ell}}$ \\
+$\max\{0,1-u\}$ & $\max\{0,1-yh(x)\}$ & $V_{\ell_{0-1}} \leq V_{\ell}$ \\
+\hline
+\end{tabular}
+\end{center}
+The result can also be extended to multi-class comp-sum losses:
+
+    \noindent \textbf{Theorem 8 (Upper and lower bound for comp-sum losses)} \quad \textit{Assume that $\Phi$ is convex, twice continuously differentiable, and satisfies the properties $\Phi'(u) < 0$ and $\Phi''(u) > 0$ for any $u \in (0, \frac{1}{2}]$. Then, the following property holds: $\mathcal{T}(t) = \Theta(t^2)$.}
+\end{frame}
+
+
+\begin{frame}{Enhanced HCB}
+    What if we allow possibly non-constant $\alpha$ and $\beta$ to modify the $\Gamma$?
+
+
+    Result: a more general bound with a hypothesis-dependent parameter $\gamma$
+
+
+    \noindent \textbf{Theorem 2} Assume that there exist a concave function $\Gamma: \mathbb{R}_+ \to \mathbb{R}$ and two positive functions $\alpha: \mathcal{H} \times \mathcal{X} \to \mathbb{R}^*_+$ and $\beta: \mathcal{H} \times \mathcal{X} \to \mathbb{R}^*_+$ with $\sup_{x \in \mathcal{X}} \alpha(h, x) < +\infty$ and $\mathbb{E}_{x \in \mathcal{X}}[\beta(h, x)] < +\infty$ for all $h \in \mathcal{H}$ such that the following holds for all $h \in \mathcal{H}$ and $x \in \mathcal{X}$:
+\[
+\frac{\Delta \mathcal{C}_{\ell_2, \mathcal{H}}(h, x) \mathbb{E}_X[\beta(h, x)]}{\beta(h, x)} \leq \Gamma \left(\alpha(h, x) \Delta \mathcal{C}_{\ell_1, \mathcal{H}}(h, x)\right).
+\]
+Then, the following inequality holds for any hypothesis $h \in \mathcal{H}$:
+\begin{equation}
+\mathcal{E}_{\ell_2}(h) - \mathcal{E}^*_{\ell_2}(\mathcal{H}) + \mathcal{M}_{\ell_2}(\mathcal{H}) \leq \Gamma \left( \gamma(h) \left( \mathcal{E}_{\ell_1}(h) - \mathcal{E}^*_{\ell_1}(\mathcal{H}) + \mathcal{M}_{\ell_1}(\mathcal{H}) \right) \right), \tag{3}
+\end{equation}
+with $\gamma(h) = \left[ \frac{\sup_{x \in \mathcal{X}} \alpha(h, x) \beta(h, x)}{\mathbb{E}_X[\beta(h, x)]} \right]$. If, additionally, $\mathcal{X}$ is a subset of $\mathbb{R}^n$ and, for any $h \in \mathcal{H}$, $x \mapsto \Delta \mathcal{C}_{\ell_1, \mathcal{H}}(h, x)$ is non-decreasing and $x \mapsto \alpha(h, x) \beta(h, x)$ is non-increasing, or vice-versa, then, the inequality holds with $\gamma(h) = \mathbb{E}_X \left[ \frac{\alpha(h, x) \beta(h, x)}{\mathbb{E}_X[\beta(h, x)]} \right]$.
+\end{frame}
+
+
+
+\begin{frame}{Enhanced HCB, cont'd}
+    \noindent Consider the Tsybakov noise condition \textcolor{blue}{(Mammen and Tsybakov, 1999)}, that is there exist $B > 0$ and $\alpha \in [0, 1)$ such that
+    \[
+    \forall t > 0, \quad \mathbb{P}[|\eta(x) - 1/2| \le t] \le B t^{\frac{\alpha}{1-\alpha}}.
+    \]
+    Note that as $\alpha \to 1$, $t^{\frac{\alpha}{1-\alpha}} \to 0$, corresponding to Massart's noise condition. When $\alpha = 0$, the condition is void. This condition is equivalent to assuming the existence of a universal constant $c > 0$ and $\alpha \in [0, 1)$ such that for all $h \in \mathcal{H}$, the following inequality holds \textcolor{blue}{(Bartlett et al., 2006)}:
+    \[
+    \mathbb{E}\left[\mathds{1}_{h(X) \neq h^*(X)}\right] \le c \Big[ \mathcal{E}_{\ell_{0-1}^{\text{bi}}}(h) - \mathcal{E}_{\ell_{0-1}^{\text{bi}}}(h^*) \Big]^\alpha.
+    \]
+    where $h^*$ is the Bayes-classifier. We also assume that there is no approximation error and that $\mathcal{M}_{\ell_{0-1}^{\text{bi}}}(\mathcal{H}) = 0$. 
+    
+    \noindent \textbf{Theorem 6} \textit{Consider a binary classification setting where the Tsybakov noise assumption holds. Assume that the following holds for all $h \in \mathcal{H}$ and $x \in \mathcal{X}$: $\Delta \mathcal{C}_{\ell_{0-1}^{\text{bi}}, \mathcal{H}}(h, x) < \Gamma(\Delta \mathcal{C}_{\ell, \mathcal{H}}(h, x))$, with $\Gamma(x) = x^{\frac{1}{s}}$, for some $s \ge 1$. Then, for any $h \in \mathcal{H}$,}
+    \[
+    \mathcal{E}_{\ell_{0-1}^{\text{bi}}}(h) - \mathcal{E}_{\ell_{0-1}^{\text{bi}}}^*(\mathcal{H}) \le c^{\frac{s-1}{s-\alpha(s-1)}} \big[ \mathcal{E}_{\ell}(h) - \mathcal{E}_{\ell}^*(\mathcal{H}) + \mathcal{M}_{\ell}(\mathcal{H}) \big]^{\frac{1}{s-\alpha(s-1)}}.
+    \]
+\end{frame}
+
+\begin{frame}{Enhanced HCB, cont'd}
+\begin{table}[h]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    % \resizebox{width}{height}{content}
+    % We set width to \textwidth and height to ! (auto)
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{llll}
+            \toprule
+            Loss functions & $\Phi$ & $\Gamma$ & $\mathcal{H}$-consistency bounds \\
+            \midrule
+            
+            Hinge & 
+            $\Phi_{\text{hinge}}(u) = \max\{0, 1-u\}$ & 
+            $x^1$ & 
+            $\mathcal{E}_{\ell}(h) - \mathcal{E}_{\ell}^*(\mathcal{H}) + \mathcal{M}_{\ell}(\mathcal{H})$ \\
+            
+            Logistic & 
+            $\Phi_{\log}(u) = \log(1 + e^{-u})$ & 
+            $x^2$ & 
+            $c^{\frac{1}{2-\alpha}} \big[\mathcal{E}_{\ell}(h) - \mathcal{E}_{\ell}^*(\mathcal{H}) + \mathcal{M}_{\ell}(\mathcal{H})\big]^{\frac{1}{2-\alpha}}$ \\
+            
+            Exponential & 
+            $\Phi_{\exp}(u) = e^{-u}$ & 
+            $x^2$ & 
+            $c^{\frac{1}{2-\alpha}} \big[\mathcal{E}_{\ell}(h) - \mathcal{E}_{\ell}^*(\mathcal{H}) + \mathcal{M}_{\ell}(\mathcal{H})\big]^{\frac{1}{2-\alpha}}$ \\
+            
+            Squared-hinge & 
+            $\Phi_{\text{sq-hinge}}(u) = (1-u)^2 1_{u \le 1}$ & 
+            $x^2$ & 
+            $c^{\frac{1}{2-\alpha}} \big[\mathcal{E}_{\ell}(h) - \mathcal{E}_{\ell}^*(\mathcal{H}) + \mathcal{M}_{\ell}(\mathcal{H})\big]^{\frac{1}{2-\alpha}}$ \\
+            
+            Sigmoid & 
+            $\Phi_{\text{sig}}(u) = 1 - \tanh(ku), \ k > 0$ & 
+            $x^1$ & 
+            $\mathcal{E}_{\ell}(h) - \mathcal{E}_{\ell}^*(\mathcal{H}) + \mathcal{M}_{\ell}(\mathcal{H})$ \\
+            
+            $\rho$-Margin & 
+            $\Phi_{\rho}(u) = \min\Big\{1, \max\Big\{0, 1 - \frac{u}{\rho}\Big\}\Big\}, \ \rho > 0$ & 
+            $x^1$ & 
+            $\mathcal{E}_{\ell}(h) - \mathcal{E}_{\ell}^*(\mathcal{H}) + \mathcal{M}_{\ell}(\mathcal{H})$ \\
+            
+            \bottomrule
+        \end{tabular}%
+    }
+\end{table}
+\end{frame}
+
+\begin{frame}{Generalization Bounds}
+    % WRITE HERE
+
+\[
+\hat{h}_S = \arg\min_{h \in \mathcal{H}} \frac{1}{m} \sum_{i=1}^m \ell(h, x_i, y_i).
+\]
+
+
+$\mathcal{H}=$ $\{(x,y) \mapsto \ell(h,x,y) : h \in \mathcal{H}\}$ and
+$\mathfrak{R}_m^\ell(\mathcal{H})$ its Rademacher complexity. We also write
+$B_\ell$ to denote an upper bound for $\ell$. Then, given the following
+$\mathcal{H}$-consistency bound:
+\begin{equation}
+\forall h \in \mathcal{H}, \quad
+\mathcal{E}_{\ell_{0\text{-}1}}(h)
+- \mathcal{E}_{\ell_{0\text{-}1}}^*(\mathcal{H})
++ \mathcal{M}_{\ell_{0\text{-}1}}(\mathcal{H})
+\le
+\Gamma\!\left(
+\mathcal{E}_\ell(h)
+- \mathcal{E}_\ell^*(\mathcal{H})
++ \mathcal{M}_\ell(\mathcal{H})
+\right),
+\tag{21}
+\end{equation}
+
+for any $\delta > 0$, with probability at least $1-\delta$ over the draw of an
+i.i.d.\ sample $S$ of size $m$, the following estimation bound holds for
+$\hat{h}_S$:
+\[
+\forall h \in \mathcal{H}, \quad
+\mathcal{E}_{\ell_{0\text{-}1}}(h)
+- \mathcal{E}_{\ell_{0\text{-}1}}^*(\mathcal{H})
+\le
+\Gamma\!\left(
+4 \mathfrak{R}_m^L(\mathcal{H})
++ 2 B_L \sqrt{\frac{\log \frac{2}{\delta}}{2m}}
++ \mathcal{M}_\ell(\mathcal{H})
+\right)
+- \mathcal{M}_{\ell_{0\text{-}1}}(\mathcal{H}) .
+\]
+
+
+    \textbf{Proof Sketch:}
+    \[
+\mathcal{E}_\ell(\hat{h}_S) - \mathcal{E}_\ell^*(\mathcal{H})
+\le 4\,\mathfrak{R}_m^\ell(\mathcal{H})
++ 2 B_\ell \sqrt{\frac{\log(2/\delta)}{2m}} \, . 
+\] 
+
+
+    
+\end{frame}
+
+\begin{frame}{Numerical Experiments}
+    \begin{figure}[h]
+    \centering
+    % width=\textwidth scales the image to fill the text width
+    \includegraphics[width=\textwidth]{plots.png} 
+    \caption{ReLU Neural Networks}
+    \label{fig:ReLU Neural Networks}
+\end{figure}
+\end{frame}
+
+\end{document}
